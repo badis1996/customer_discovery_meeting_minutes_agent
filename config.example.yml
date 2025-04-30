@@ -1,0 +1,98 @@
+# Apollo Call Analyzer Configuration
+
+# API Keys and Authentication
+api:
+  openai:
+    api_key: "your_openai_api_key_here"
+    model: "gpt-4"
+  apollo:
+    api_key: "your_apollo_api_key_here"
+    team_id: "your_apollo_team_id"
+
+# Discovery Sheet Configuration
+discovery_sheet:
+  sections:
+    - title: "Company Information"
+      fields:
+        - name: "company_name"
+          description: "Name of the company"
+        - name: "industry"
+          description: "Industry or sector"
+        - name: "company_size"
+          description: "Number of employees or company size category"
+        - name: "key_decision_makers"
+          description: "Names and titles of key decision makers mentioned"
+    
+    - title: "Current Situation"
+      fields:
+        - name: "current_tools"
+          description: "Tools or solutions currently in use"
+        - name: "processes"
+          description: "Current relevant business processes"
+        - name: "challenges"
+          description: "Pain points and challenges mentioned"
+    
+    - title: "Needs and Requirements"
+      fields:
+        - name: "explicit_needs"
+          description: "Explicitly stated needs or requirements"
+        - name: "implicit_needs"
+          description: "Implied needs based on problems discussed"
+        - name: "success_metrics"
+          description: "How success would be measured"
+    
+    - title: "Buying Process"
+      fields:
+        - name: "timeline"
+          description: "Expected timeline for decision"
+        - name: "budget"
+          description: "Budget information or constraints"
+        - name: "decision_process"
+          description: "How decisions are made and who is involved"
+        - name: "competing_solutions"
+          description: "Other solutions being considered"
+    
+    - title: "Next Steps"
+      fields:
+        - name: "action_items"
+          description: "Agreed upon next steps"
+        - name: "follow_up_date"
+          description: "When to follow up"
+        - name: "additional_contacts"
+          description: "Other people to involve"
+    
+    - title: "Notes"
+      fields:
+        - name: "key_quotes"
+          description: "Important verbatim quotes from the call"
+        - name: "additional_notes"
+          description: "Any other important information"
+
+# Transcription Settings
+transcription:
+  language: "en"
+  speaker_diarization: true
+  speakers: ["rep", "prospect"]
+  format: "text"
+
+# Export Settings
+export:
+  default_format: "markdown"
+  available_formats: ["markdown", "csv", "json"]
+  # Uncomment to enable PDF export
+  # available_formats: ["markdown", "csv", "json", "pdf"]
+  templates_dir: "./templates"
+  output_dir: "./output"
+
+# Integration Settings
+integrations:
+  # Uncomment and configure as needed
+  # salesforce:
+  #   enabled: false
+  #   username: "your_username"
+  #   password: "your_password"
+  #   security_token: "your_security_token"
+  #   domain: "login" # or "test" for sandbox
+  # hubspot:
+  #   enabled: false
+  #   api_key: "your_hubspot_api_key"
