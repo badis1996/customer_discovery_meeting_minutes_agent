@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Discovery Meeting Minutes Agent</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            padding-top: 2rem;
+            background-color: #f8f9fa;
+        }
+        .card {
+            margin-bottom: 1.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
+        }
+        .progress {
+            height: 1.5rem;
+            margin: 1rem 0;
+        }
+        .result-container {
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            padding: 1rem;
+            background-color: #fff;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .nav-tabs {
+            margin-bottom: 1rem;
+        }
+        .header-logo {
+            max-height: 50px;
+            margin-right: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="d-flex align-items-center mb-4">
+                    <h1 class="text-center mb-0 flex-grow-1">Customer Discovery Meeting Minutes Agent</h1>
+                </div>
+                <p class="text-center text-muted mb-4">Upload call recordings from Apollo.io to generate customer discovery sheets automatically.</p>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs card-header-tabs" id="analysisTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="upload-tab" data-bs-toggle="tab" data-bs-target="#upload" type="button" role="tab" aria-controls="upload" aria-selected="true">Upload Recording</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="apollo-tab" data-bs-toggle="tab" data-bs-target="#apollo" type="button" role="tab" aria-controls="apollo" aria-selected="false">Apollo.io Recording</button>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content" id="analysisTabsContent">
+                            <!-- Upload Recording Tab -->
+                            <div class="tab-pane fade show active" id="upload" role="tabpanel" aria-labelledby="upload-tab">
+                                <form id="uploadForm">
+                                    <div class="mb-3">
+                                        <label for="fileUpload" class="form-label">Upload Call Recording</label>
+                                        <input class="form-control" type="file" id="fileUpload" accept=".mp3,.wav,.m4a,.opus">
+                                        <div class="form-text">Supported formats: MP3, WAV, M4A, OPUS</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="outputFormat" class="form-label">Output Format</label>
+                                        <select class="form-select" id="outputFormat">
+                                            <option value="json">JSON</option>
+                                            <option value="markdown">Markdown</option>
+                                            <option value="csv">CSV</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Analyze Recording</button>
+                                </form>
+                            </div>
+                            
+                            <!-- Apollo.io Recording Tab -->
+                            <div class="tab-pane fade" id="apollo" role="tabpanel" aria-labelledby="apollo-tab">
+                                <form id="apolloForm">
+                                    <div class="mb-3">
+                                        <label for="apolloCallId" class="form-label">Apollo.io Call ID</label>
+                                        <input type="text" class="form-control" id="apolloCallId" placeholder="Enter Apollo.io call ID">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="apolloOutputFormat" class="form-label">Output Format</label>
+                                        <select class="form-select" id="apolloOutputFormat">
+                                            <option value="json">JSON</option>
+                                            <option value="markdown">Markdown</option>
+                                            <option value="csv">CSV</option>
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Analyze Recording</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Job Status and Results -->
+                <div id="jobStatus" class="card d-none">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Analysis Progress</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="statusText" class="mb-2">Initializing...</div>
+                        <div class="progress">
+                            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                        </div>
+                        <div id="resultDownload" class="mt-3 d-none">
+                            <a id="downloadLink" href="#" class="btn btn-success">Download Discovery Sheet</a>
+                        </div>
+                        <div id="errorMessage" class="alert alert-danger mt-3 d-none"></div>
+                    </div>
+                </div>
+                
+                <div id="resultCard" class="card d-none">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Discovery Sheet Preview</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="nav nav-tabs" id="resultTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="company-tab" data-bs-toggle="tab" data-bs-target="#company" type="button" role="tab" aria-controls="company" aria-selected="true">Company Info</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="situation-tab" data-bs-toggle="tab" data-bs-target="#situation" type="button" role="tab" aria-controls="situation" aria-selected="false">Current Situation</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="needs-tab" data-bs-toggle="tab" data-bs-target="#needs" type="button" role="tab" aria-controls="needs" aria-selected="false">Needs</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="process-tab" data-bs-toggle="tab" data-bs-target="#process" type="button" role="tab" aria-controls="process" aria-selected="false">Buying Process</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="next-tab" data-bs-toggle="tab" data-bs-target="#next" type="button" role="tab" aria-controls="next" aria-selected="false">Next Steps</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes" type="button" role="tab" aria-controls="notes" aria-selected="false">Notes</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="transcript-tab" data-bs-toggle="tab" data-bs-target="#transcript" type="button" role="tab" aria-controls="transcript" aria-selected="false">Transcript</button>
+                            </li>
+                        </ul>
+                        <div class="tab-content pt-3" id="resultTabsContent">
+                            <div class="tab-pane fade show active" id="company" role="tabpanel" aria-labelledby="company-tab">
+                                <div id="companyInfo" class="result-container"></div>
+                            </div>
+                            <div class="tab-pane fade" id="situation" role="tabpanel" aria-labelledby="situation-tab">
+                                <div id="situationInfo" class="result-container"></div>
+                            </div>
+                            <div class="tab-pane fade" id="needs" role="tabpanel" aria-labelledby="needs-tab">
+                                <div id="needsInfo" class="result-container"></div>
+                            </div>
+                            <div class="tab-pane fade" id="process" role="tabpanel" aria-labelledby="process-tab">
+                                <div id="processInfo" class="result-container"></div>
+                            </div>
+                            <div class="tab-pane fade" id="next" role="tabpanel" aria-labelledby="next-tab">
+                                <div id="nextInfo" class="result-container"></div>
+                            </div>
+                            <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
+                                <div id="notesInfo" class="result-container"></div>
+                            </div>
+                            <div class="tab-pane fade" id="transcript" role="tabpanel" aria-labelledby="transcript-tab">
+                                <div id="transcriptInfo" class="result-container">
+                                    <pre class="mb-0"></pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  meeting-minutes-agent:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./config.yml:/app/config.yml
+      - ./output:/app/output
+      - ./uploads:/app/uploads
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - APOLLO_API_KEY=${APOLLO_API_KEY}
+      - APOLLO_TEAM_ID=${APOLLO_TEAM_ID}
+    restart: unless-stopped
